@@ -1,0 +1,188 @@
+:root {
+  font-family: Arial, sans-serif;
+  color: #1f2933;
+  background: #eef2f6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  border: 1px solid #1f2933;
+  background: #1f2933;
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+input,
+select {
+  border: 1px solid #c9d2dc;
+  border-radius: 6px;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.shell {
+  width: min(960px, calc(100% - 32px));
+  margin: 32px auto;
+}
+
+.topbar,
+.section-header,
+.list li,
+.actions,
+.tabs,
+.inline-form {
+  display: flex;
+  gap: 12px;
+}
+
+.topbar,
+.section-header,
+.list li {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topbar p,
+h1,
+h2 {
+  margin: 0;
+}
+
+.panel {
+  background: #fff;
+  border: 1px solid #d8e0e8;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.auth-panel {
+  max-width: 420px;
+  margin: 80px auto 0;
+}
+
+.form {
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.tabs {
+  margin-top: 16px;
+}
+
+.tabs button {
+  background: #fff;
+  color: #1f2933;
+}
+
+.tabs button.active {
+  background: #1f2933;
+  color: #fff;
+}
+
+.compact {
+  margin-top: 0;
+}
+
+.inline-form {
+  margin-top: 16px;
+}
+
+.admin-user-search {
+  max-width: 280px;
+}
+
+.admin-user-form {
+  max-width: 480px;
+}
+
+.list {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+
+.list li {
+  border-top: 1px solid #edf1f5;
+  padding-top: 12px;
+}
+
+.list span {
+  overflow-wrap: anywhere;
+}
+
+.message-content {
+  display: grid;
+  flex: 1;
+  gap: 6px;
+  min-width: 0;
+}
+
+.list li.message-item {
+  align-items: flex-start;
+}
+
+.edit-form {
+  display: grid;
+  gap: 8px;
+}
+
+.edited-label {
+  color: #52616f;
+}
+
+.error {
+  color: #b42318;
+  margin-bottom: 0;
+}
+
+.empty {
+  color: #52616f;
+  margin-bottom: 0;
+}
+
+.pagination {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .topbar,
+  .section-header,
+  .list li,
+  .inline-form,
+  .pagination {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .admin-user-search {
+    max-width: none;
+  }
+}
