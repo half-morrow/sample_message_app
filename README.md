@@ -166,6 +166,20 @@ cd frontend
 PLAYWRIGHT_BASE_URL=http://localhost:5173 npm run test:e2e
 ```
 
+ビジュアルリグレッションテストで差分を確認する場合:
+
+```sh
+cd frontend
+PLAYWRIGHT_BASE_URL=http://localhost:5173 npm run test:e2e:visual
+```
+
+初回または意図したUI変更でsnapshotを更新する場合:
+
+```sh
+cd frontend
+PLAYWRIGHT_BASE_URL=http://localhost:5173 npm run test:e2e:visual -- --update-snapshots
+```
+
 README用スクリーンショットを再生成する場合:
 
 ```sh
@@ -180,6 +194,7 @@ docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm frontend
 docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm backend bin/rails db:prepare
 docker compose -f docker-compose.yml -f docker-compose.e2e.yml up -d --build db backend frontend
 docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm e2e npm run test:e2e
+docker compose -f docker-compose.yml -f docker-compose.e2e.yml run --rm e2e npm run test:e2e:visual
 ```
 
 E2E時はbackendが`sample_message_app_e2e`を使い、frontendはCompose内のbackendへ接続します。通常の開発DBとは分けて扱います。初回はPlaywright公式イメージの取得に時間がかかる場合があります。
@@ -275,5 +290,4 @@ IPv6アドレスへの接続で`Network is unreachable`が出た場合は、dire
 - UI表示や入力エラー表示の改善
 - 管理者向け操作の拡充
 - E2Eテストケースの追加
-- スクリーンショットを用いたビジュアルリグレッションテストの追加
 - 本番運用手順の継続的な整理

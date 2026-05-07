@@ -47,6 +47,112 @@ test("login failure shows a Japanese error message", async ({ page }) => {
   await expect(page.getByText("invalid_email_or_password")).toHaveCount(0);
 });
 
+test("broken stored user clears local session and shows login", async ({ page }) => {
+  let loginRequests = 0;
+  let authHeader = undefined;
+  await page.addInitScript(() => {
+    localStorage.setItem("token", "broken-session-token");
+    localStorage.setItem("user", "{broken-json");
+  });
+  await page.route("**://*/api/auth/login", async (route) => {
+    loginRequests += 1;
+    authHeader = route.request().headers().authorization || null;
+    await route.fulfill({ status: 401, json: { error: "invalid_email_or_password" } });
+  });
+
+  await page.goto("/");
+
+  await expect(page.getByPlaceholder("メールアドレス")).toBeVisible();
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("token"))).toBeNull();
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("user"))).toBeNull();
+  await page.getByPlaceholder("メールアドレス").fill("missing@example.com");
+  await page.getByPlaceholder("パスワード", { exact: true }).fill("wrong-password");
+  await page.locator("form").getByRole("button", { name: "ログイン", exact: true }).click();
+  await expect.poll(() => loginRequests).toBe(1);
+  await expect.poll(() => authHeader).toBeNull();
+});
+
+test("logout clears local session even when API fails", async ({ page }) => {
+  await setMemberSession(page);
+  await page.route("**/api/messages**", async (route) => {
+    await route.fulfill({ json: messageIndexPayload([]) });
+  });
+  await page.route("**/api/auth/logout", async (route) => {
+    await route.fulfill({ status: 500, json: { error: "request_failed" } });
+  });
+
+  await page.goto("/");
+  await expect(page.getByRole("heading", { name: "チャット" })).toBeVisible();
+  await page.getByRole("button", { name: "ログアウト" }).click();
+
+  await expect(page.getByPlaceholder("メールアドレス")).toBeVisible();
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("token"))).toBeNull();
+  await expect.poll(() => page.evaluate(() => localStorage.getItem("user"))).toBeNull();
+});
+
+test("array payloads are normalized for messages and admin users", async ({ page }) => {
+  await setAdminSession(page);
+  await page.route("**/api/messages**", async (route) => {
+    await route.fulfill({
+      json: [
+        { id: 1, body: "Array message", edited: false, can_edit: false, can_delete: false, user: { name: "Array User" } },
+      ],
+    });
+  });
+  await page.route(/\/api\/admin\/users(\?.*)?$/, async (route) => {
+    await route.fulfill({
+      json: [
+        { id: 1, name: "E2E Admin", email: "admin@example.com", role: "admin" },
+        { id: 2, name: "Array Admin User", email: "array-admin@example.com", role: "member" },
+      ],
+    });
+  });
+
+  await page.goto("/");
+
+  await expect(page.getByText("Array message")).toBeVisible();
+  await expect(page.getByText("Array Admin User / array-admin@example.com / member")).toBeVisible();
+  await expect(page.locator(".pagination").first().getByText("1 / 1")).toBeVisible();
+});
+
+test("admin show user alerts formatted details", async ({ page }) => {
+  await setAdminSession(page);
+  let alertMessage = "";
+  await page.route("**/api/messages**", async (route) => {
+    await route.fulfill({ json: messageIndexPayload([]) });
+  });
+  await page.route(/\/api\/admin\/users(\/\d+)?(\?.*)?$/, async (route) => {
+    const url = new URL(route.request().url());
+    if (url.pathname.endsWith("/2")) {
+      await route.fulfill({
+        json: { id: 2, name: "Show Target", email: "show@example.com", role: "member" },
+      });
+      return;
+    }
+
+    await route.fulfill({
+      json: {
+        items: [
+          { id: 1, name: "E2E Admin", email: "admin@example.com", role: "admin" },
+          { id: 2, name: "Show Target", email: "show@example.com", role: "member" },
+        ],
+        meta: { page: 1, per_page: 10, total_count: 2, total_pages: 1 },
+      },
+    });
+  });
+  page.on("dialog", async (dialog) => {
+    alertMessage = dialog.message();
+    await dialog.accept();
+  });
+
+  await page.goto("/");
+  const adminPanel = page.locator("section").filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
+  const targetRow = adminPanel.locator("li").filter({ hasText: "Show Target / show@example.com / member" });
+  await targetRow.getByRole("button", { name: "表示" }).click();
+
+  await expect.poll(() => alertMessage).toBe("Show Target\nshow@example.com\nmember");
+});
+
 test("new user can post a message and see it after login", async ({ page }, testInfo) => {
   const unique = `${Date.now()}-${testInfo.workerIndex}`;
   const name = `E2E User ${unique}`;

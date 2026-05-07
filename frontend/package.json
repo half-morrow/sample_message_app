@@ -3,7 +3,8 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test:e2e": "playwright test --grep-invert @screenshots",
+    "test:e2e": "playwright test --grep-invert \"@screenshots|@visual\"",
+    "test:e2e:visual": "playwright test e2e/visual-regression.spec.js",
     "screenshots:readme": "playwright test e2e/screenshots.spec.js"
   },
   "dependencies": {
