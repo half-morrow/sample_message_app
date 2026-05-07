@@ -7,6 +7,15 @@ React SPA + Ruby on Rails APIで作成した簡易メッセージアプリです
 
 PostgreSQLはSupabase Postgresを利用し、Render無料枠で公開する構成です。
 
+## スクリーンショット
+### ログイン画面
+![ログイン画面](docs/screenshots/login.png)
+
+### 一般ユーザーのチャット画面
+![一般ユーザーのチャット画面](docs/screenshots/user-chat.png)
+
+### 管理画面
+![管理画面](docs/screenshots/admin.png)
 
 ## 公開URL
 - App: https://sample-message-app.onrender.com/
@@ -157,6 +166,13 @@ cd frontend
 PLAYWRIGHT_BASE_URL=http://localhost:5173 npm run test:e2e
 ```
 
+README用スクリーンショットを再生成する場合:
+
+```sh
+cd frontend
+PLAYWRIGHT_BASE_URL=http://localhost:5173 npm run screenshots:readme
+```
+
 Dockerで実行する場合:
 
 ```sh
@@ -259,4 +275,5 @@ IPv6アドレスへの接続で`Network is unreachable`が出た場合は、dire
 - UI表示や入力エラー表示の改善
 - 管理者向け操作の拡充
 - E2Eテストケースの追加
+- スクリーンショットを用いたビジュアルリグレッションテストの追加
 - 本番運用手順の継続的な整理
