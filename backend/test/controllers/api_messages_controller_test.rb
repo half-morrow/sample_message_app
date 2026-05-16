@@ -192,14 +192,14 @@ class ApiMessagesControllerTest < ActionDispatch::IntegrationTest
       params: { body: "" },
       headers: auth_headers(@user)
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
     assert_equal "Before", message.reload.body
 
     patch "/api/messages/#{message.id}",
       params: { body: "a" * 501 },
       headers: auth_headers(@user)
 
-    assert_response :unprocessable_entity
+    assert_response :unprocessable_content
     assert_equal "Before", message.reload.body
   end
 

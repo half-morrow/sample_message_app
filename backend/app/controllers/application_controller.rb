@@ -8,7 +8,7 @@ class ApplicationController < ActionController::API
   private
 
   def render_validation_errors(record)
-    render json: { errors: record.errors.full_messages }, status: :unprocessable_entity
+    render json: { errors: record.errors.full_messages }, status: :unprocessable_content
   end
 
   def pagination_page
