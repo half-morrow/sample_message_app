@@ -4,18 +4,12 @@ class Api::Admin::UsersController < ApplicationController
 
   def index
     users = User.search(params[:q]).order(created_at: :desc)
-    page = page_param
-    per_page = 10
-    total_count = users.count
+    page = pagination_page
+    per_page = default_per_page
 
     render json: {
-      items: users.limit(per_page).offset((page - 1) * per_page).as_json(only: %i[id name email role created_at]),
-      meta: {
-        page: page,
-        per_page: per_page,
-        total_count: total_count,
-        total_pages: (total_count / per_page.to_f).ceil
-      }
+      items: paginated_scope(users, page: page, per_page: per_page).as_json(only: %i[id name email role created_at]),
+      meta: pagination_meta(users, page: page, per_page: per_page)
     }
   end
 
@@ -61,8 +55,4 @@ class Api::Admin::UsersController < ApplicationController
     params.permit(:name, :email, :role, :password, :password_confirmation)
   end
 
-  def page_param
-    page = Integer(params[:page], exception: false)
-    page.present? && page >= 1 ? page : 1
-  end
 end

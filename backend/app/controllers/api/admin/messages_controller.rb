@@ -4,18 +4,12 @@ class Api::Admin::MessagesController < ApplicationController
 
   def index
     messages = Message.includes(:user).search(params[:q]).recent
-    page = page_param
-    per_page = 10
-    total_count = messages.count
+    page = pagination_page
+    per_page = default_per_page
 
     render json: {
-      items: messages.limit(per_page).offset((page - 1) * per_page).map { |message| serialize_message(message) },
-      meta: {
-        page: page,
-        per_page: per_page,
-        total_count: total_count,
-        total_pages: (total_count / per_page.to_f).ceil
-      }
+      items: paginated_scope(messages, page: page, per_page: per_page).map { |message| serialize_message(message) },
+      meta: pagination_meta(messages, page: page, per_page: per_page)
     }
   end
 
@@ -65,8 +59,4 @@ class Api::Admin::MessagesController < ApplicationController
     }
   end
 
-  def page_param
-    page = Integer(params[:page], exception: false)
-    page.present? && page >= 1 ? page : 1
-  end
 end
