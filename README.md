@@ -161,6 +161,7 @@ fnm use
 node -v
 ```
 
+
 ### Backend
 devbox PostgreSQL 17 serviceを使う場合:
 
@@ -212,6 +213,35 @@ VITE_API_BASE_URL=http://localhost:3000
 通常セットアップでは `npm ci` を使います。依存追加・更新で `package-lock.json` を更新する場合のみ `npm install` を使います。
 
 ## テスト・ビルド
+### Lint / format
+初回導入では検出環境の整備と現状把握を目的にしています。既存コードの一括整形、RuboCop auto-correct、ESLint fix、CI必須化は別判断にします。
+
+Backend:
+
+```sh
+cd backend
+bundle exec rubocop
+```
+
+Frontend:
+
+```sh
+cd frontend
+npm run lint
+npm run format:check
+```
+
+自動修正を行う場合は、通常の実装差分と分けて確認してください。
+
+```sh
+cd backend
+bundle exec rubocop -a
+
+cd ../frontend
+npm run lint:fix
+npm run format
+```
+
 ### Backend test
 ホストOS上のPostgreSQLを使う場合は、`DB_HOST` / `DB_USERNAME` / `DB_PASSWORD` / 必要に応じて `PGPORT` を手元の接続情報に合わせます。
 
