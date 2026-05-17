@@ -1,0 +1,18 @@
+pre-commit:
+  parallel: false
+  commands:
+    rubocop:
+      root: backend
+      glob: "**/*.rb"
+      run: docker compose -f ../docker-compose.yml run --rm --no-deps -T -u "$(id -u):$(id -g)" backend sh -c 'HOME=/tmp bundle exec rubocop -a --force-exclusion "$@"' -- {staged_files}
+      stage_fixed: true
+    eslint:
+      root: frontend
+      glob: "**/*.{js,jsx,mjs,cjs}"
+      run: docker compose -f ../docker-compose.yml run --rm --no-deps -T -u "$(id -u):$(id -g)" frontend sh -c 'HOME=/tmp npm_config_update_notifier=false npm exec -- eslint --fix "$@"' -- {staged_files}
+      stage_fixed: true
+    prettier:
+      root: frontend
+      glob: "**/*.{js,jsx,mjs,cjs,json,css,md,html,yml,yaml}"
+      run: docker compose -f ../docker-compose.yml run --rm --no-deps -T -u "$(id -u):$(id -g)" frontend sh -c 'HOME=/tmp npm_config_update_notifier=false npm exec -- prettier --write "$@"' -- {staged_files}
+      stage_fixed: true

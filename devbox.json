@@ -4,7 +4,8 @@
     "ruby@3.3.0",
     "pkg-config@latest",
     "libyaml@latest",
-    "postgresql_17@latest"
+    "postgresql_17@latest",
+    "lefthook@latest"
   ],
   "shell": {
     "init_hook": []
