@@ -10,7 +10,13 @@ export function ChatPanel({ chat }) {
         <button onClick={() => chat.loadMessages(chat.meta.page)}>更新</button>
       </div>
       <form onSubmit={chat.submit} className="inline-form">
-        <input value={chat.body} onChange={(event) => chat.setBody(event.target.value)} placeholder="メッセージ" maxLength="500" required />
+        <input
+          value={chat.body}
+          onChange={(event) => chat.setBody(event.target.value)}
+          placeholder="メッセージ"
+          maxLength="500"
+          required
+        />
         <button type="submit">投稿</button>
       </form>
       {chat.error && <p className="error">{chat.error}</p>}
@@ -21,10 +27,17 @@ export function ChatPanel({ chat }) {
               <strong>{message.user?.name || "不明なユーザー"}</strong>
               {chat.editingId === message.id ? (
                 <form className="edit-form" onSubmit={(event) => chat.saveEdit(event, message)}>
-                  <input value={chat.editBody} onChange={(event) => chat.setEditBody(event.target.value)} maxLength="500" required />
+                  <input
+                    value={chat.editBody}
+                    onChange={(event) => chat.setEditBody(event.target.value)}
+                    maxLength="500"
+                    required
+                  />
                   <div className="actions">
                     <button type="submit">保存</button>
-                    <button type="button" onClick={chat.cancelEdit}>キャンセル</button>
+                    <button type="button" onClick={chat.cancelEdit}>
+                      キャンセル
+                    </button>
                   </div>
                 </form>
               ) : (
@@ -35,7 +48,9 @@ export function ChatPanel({ chat }) {
             {(message.can_edit || message.can_delete) && chat.editingId !== message.id && (
               <div className="actions">
                 {message.can_edit && <button onClick={() => chat.startEdit(message)}>編集</button>}
-                {message.can_delete && <button onClick={() => chat.deleteMessage(message)}>削除</button>}
+                {message.can_delete && (
+                  <button onClick={() => chat.deleteMessage(message)}>削除</button>
+                )}
               </div>
             )}
           </li>
@@ -43,9 +58,15 @@ export function ChatPanel({ chat }) {
       </ul>
       {!chat.error && !hasMessages && <p className="empty">メッセージはまだありません。</p>}
       <div className="pagination">
-        <button disabled={!hasPrevious} onClick={() => chat.loadMessages(chat.meta.page - 1)}>前へ</button>
-        <span>{chat.meta.total_pages > 0 ? `${chat.meta.page} / ${chat.meta.total_pages}` : "0件"}</span>
-        <button disabled={!hasNext} onClick={() => chat.loadMessages(chat.meta.page + 1)}>次へ</button>
+        <button disabled={!hasPrevious} onClick={() => chat.loadMessages(chat.meta.page - 1)}>
+          前へ
+        </button>
+        <span>
+          {chat.meta.total_pages > 0 ? `${chat.meta.page} / ${chat.meta.total_pages}` : "0件"}
+        </span>
+        <button disabled={!hasNext} onClick={() => chat.loadMessages(chat.meta.page + 1)}>
+          次へ
+        </button>
       </div>
     </section>
   );

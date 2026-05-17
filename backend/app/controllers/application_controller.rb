@@ -1,8 +1,11 @@
+# frozen_string_literal: true
+
+# Base API controller with shared error and pagination helpers.
 class ApplicationController < ActionController::API
   include Authentication
 
   rescue_from ActiveRecord::RecordNotFound do
-    render json: { error: "not_found" }, status: :not_found
+    render json: { error: 'not_found' }, status: :not_found
   end
 
   private

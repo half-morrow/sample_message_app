@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { createMessage, deleteMessage, fetchMessages, updateMessage } from "../actions/messageActions";
+import {
+  createMessage,
+  deleteMessage,
+  fetchMessages,
+  updateMessage,
+} from "../actions/messageActions";
 import { CHAT_EMPTY_META } from "../constants/chat";
 import { normalizeMessagesIndex } from "../utils/messages";
 
@@ -74,8 +79,28 @@ export function useChatMessages(api) {
   }
 
   useEffect(() => {
-    loadMessages(1);
-  }, []);
+    let isCurrent = true;
+
+    fetchMessages(api, 1)
+      .then((payload) => {
+        if (!isCurrent) return;
+
+        const normalized = normalizeMessagesIndex(payload, 1);
+        setMessages(normalized.items);
+        setMeta(normalized.meta);
+      })
+      .catch((err) => {
+        if (!isCurrent) return;
+
+        setMessages([]);
+        setMeta({ ...CHAT_EMPTY_META, page: 1 });
+        setError(err.message);
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [api]);
 
   return {
     messages,

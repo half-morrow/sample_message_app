@@ -48,10 +48,13 @@ const adminUsers = [
 test.use({ viewport: { width: 1280, height: 800 } });
 
 async function setSession(page, user, token) {
-  await page.addInitScript(({ storedUser, storedToken }) => {
-    localStorage.setItem("token", storedToken);
-    localStorage.setItem("user", JSON.stringify(storedUser));
-  }, { storedUser: user, storedToken: token });
+  await page.addInitScript(
+    ({ storedUser, storedToken }) => {
+      localStorage.setItem("token", storedToken);
+      localStorage.setItem("user", JSON.stringify(storedUser));
+    },
+    { storedUser: user, storedToken: token }
+  );
 }
 
 async function routeMessages(page) {
@@ -104,7 +107,9 @@ test("管理画面 @visual", async ({ page }) => {
   await routeAdminUsers(page);
 
   await page.goto("/");
-  const adminPanel = page.locator("section").filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
+  const adminPanel = page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
   await expect(adminPanel.getByText("佐藤 花子 / hanako.sato@example.test / member")).toBeVisible();
 
   await expect(page).toHaveScreenshot("admin.png");

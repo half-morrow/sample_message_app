@@ -3,24 +3,30 @@ import { expect, test } from "@playwright/test";
 async function setAdminSession(page) {
   await page.addInitScript(() => {
     localStorage.setItem("token", "e2e-admin-token");
-    localStorage.setItem("user", JSON.stringify({
-      id: 1,
-      name: "E2E Admin",
-      email: "admin@example.com",
-      role: "admin",
-    }));
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: 1,
+        name: "E2E Admin",
+        email: "admin@example.com",
+        role: "admin",
+      })
+    );
   });
 }
 
 async function setMemberSession(page) {
   await page.addInitScript(() => {
     localStorage.setItem("token", "e2e-member-token");
-    localStorage.setItem("user", JSON.stringify({
-      id: 2,
-      name: "E2E Member",
-      email: "member@example.com",
-      role: "member",
-    }));
+    localStorage.setItem(
+      "user",
+      JSON.stringify({
+        id: 2,
+        name: "E2E Member",
+        email: "member@example.com",
+        role: "member",
+      })
+    );
   });
 }
 
@@ -95,7 +101,14 @@ test("array payloads are normalized for messages and admin users", async ({ page
   await page.route("**/api/messages**", async (route) => {
     await route.fulfill({
       json: [
-        { id: 1, body: "Array message", edited: false, can_edit: false, can_delete: false, user: { name: "Array User" } },
+        {
+          id: 1,
+          body: "Array message",
+          edited: false,
+          can_edit: false,
+          can_delete: false,
+          user: { name: "Array User" },
+        },
       ],
     });
   });
@@ -146,8 +159,12 @@ test("admin show user alerts formatted details", async ({ page }) => {
   });
 
   await page.goto("/");
-  const adminPanel = page.locator("section").filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
-  const targetRow = adminPanel.locator("li").filter({ hasText: "Show Target / show@example.com / member" });
+  const adminPanel = page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
+  const targetRow = adminPanel
+    .locator("li")
+    .filter({ hasText: "Show Target / show@example.com / member" });
   await targetRow.getByRole("button", { name: "表示" }).click();
 
   await expect.poll(() => alertMessage).toBe("Show Target\nshow@example.com\nmember");
@@ -237,7 +254,12 @@ test("admin user form creates and edits users without prompts", async ({ page })
 
     if (method === "POST") {
       createPayload = JSON.parse(route.request().postData() || "{}");
-      users.push({ id: 3, name: createPayload.name, email: createPayload.email, role: createPayload.role });
+      users.push({
+        id: 3,
+        name: createPayload.name,
+        email: createPayload.email,
+        role: createPayload.role,
+      });
       await route.fulfill({ status: 201, json: users.at(-1) });
       return;
     }
@@ -261,9 +283,15 @@ test("admin user form creates and edits users without prompts", async ({ page })
 
   await page.goto("/");
 
-  const adminPanel = page.locator("section").filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
-  const selfRow = adminPanel.locator("li").filter({ hasText: "E2E Admin / admin@example.com / admin" });
-  const editRow = adminPanel.locator("li").filter({ hasText: "Edit Target / edit@example.com / member" });
+  const adminPanel = page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
+  const selfRow = adminPanel
+    .locator("li")
+    .filter({ hasText: "E2E Admin / admin@example.com / admin" });
+  const editRow = adminPanel
+    .locator("li")
+    .filter({ hasText: "Edit Target / edit@example.com / member" });
   await expect(selfRow.getByRole("button", { name: "削除" })).toHaveCount(0);
   await expect(adminPanel.getByRole("button", { name: "削除" })).toHaveCount(1);
 
@@ -312,12 +340,13 @@ test("admin user pagination, search, and delete confirm work", async ({ page }) 
   let userLoads = 0;
   let deleteRequests = 0;
   const userRequests = [];
-  const makeUsers = (pageNumber) => Array.from({ length: pageNumber === 1 ? 10 : 2 }, (_, index) => ({
-    id: pageNumber * 100 + index,
-    name: `User ${pageNumber}-${index}`,
-    email: `user-${pageNumber}-${index}@example.com`,
-    role: "member",
-  }));
+  const makeUsers = (pageNumber) =>
+    Array.from({ length: pageNumber === 1 ? 10 : 2 }, (_, index) => ({
+      id: pageNumber * 100 + index,
+      name: `User ${pageNumber}-${index}`,
+      email: `user-${pageNumber}-${index}@example.com`,
+      role: "member",
+    }));
 
   page.on("dialog", async (dialog) => {
     await dialog.dismiss();
@@ -346,7 +375,9 @@ test("admin user pagination, search, and delete confirm work", async ({ page }) 
 
   await page.goto("/");
 
-  const adminPanel = page.locator("section").filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
+  const adminPanel = page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
   await expect(page.getByText("User 1-0 / user-1-0@example.com / member")).toBeVisible();
   await expect(page.getByText("User 1-9 / user-1-9@example.com / member")).toBeVisible();
   await adminPanel.getByRole("button", { name: "次へ" }).click();
@@ -383,20 +414,28 @@ test("admin delete confirm accepts and reloads the list", async ({ page }) => {
     }
 
     userLoads += 1;
-    const items = userLoads === 1
-      ? [{ id: 3, name: "Delete Me", email: "delete-me@example.com", role: "member" }]
-      : [];
+    const items =
+      userLoads === 1
+        ? [{ id: 3, name: "Delete Me", email: "delete-me@example.com", role: "member" }]
+        : [];
 
     await route.fulfill({
       json: {
         items,
-        meta: { page: 1, per_page: 10, total_count: items.length, total_pages: items.length > 0 ? 1 : 0 },
+        meta: {
+          page: 1,
+          per_page: 10,
+          total_count: items.length,
+          total_pages: items.length > 0 ? 1 : 0,
+        },
       },
     });
   });
   await page.goto("/");
 
-  const adminPanel = page.locator("section").filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
+  const adminPanel = page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
   await expect(page.getByText("Delete Me / delete-me@example.com / member")).toBeVisible();
   await adminPanel.getByRole("button", { name: "削除" }).first().click();
 
@@ -433,12 +472,16 @@ test("member can page messages and edit only own message", async ({ page }) => {
 
     const pageNumber = Number(url.searchParams.get("page")) || 1;
     const start = (pageNumber - 1) * 10;
-    await route.fulfill({ json: messageIndexPayload(messages.slice(start, start + 10), pageNumber, messages.length) });
+    await route.fulfill({
+      json: messageIndexPayload(messages.slice(start, start + 10), pageNumber, messages.length),
+    });
   });
 
   await page.goto("/");
 
-  const chat = page.locator("section").filter({ has: page.getByRole("heading", { name: "チャット" }) });
+  const chat = page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "チャット" }) });
   await expect(chat.getByText("Message 1", { exact: true })).toBeVisible();
   await expect(chat.getByText("Message 10", { exact: true })).toBeVisible();
   await expect(chat.getByRole("button", { name: "削除" })).toHaveCount(0);
@@ -462,8 +505,22 @@ test("admin can edit and delete messages from the chat list", async ({ page }) =
   let deleteRequests = 0;
   let acceptDelete = false;
   const messages = [
-    { id: 1, body: "Admin editable", edited: false, can_edit: true, can_delete: true, user: { id: 2, name: "Other User" } },
-    { id: 2, body: "Admin deletable", edited: false, can_edit: true, can_delete: true, user: { id: 3, name: "Another User" } },
+    {
+      id: 1,
+      body: "Admin editable",
+      edited: false,
+      can_edit: true,
+      can_delete: true,
+      user: { id: 2, name: "Other User" },
+    },
+    {
+      id: 2,
+      body: "Admin deletable",
+      edited: false,
+      can_edit: true,
+      can_delete: true,
+      user: { id: 3, name: "Another User" },
+    },
   ];
 
   page.on("dialog", async (dialog) => {
@@ -509,7 +566,9 @@ test("admin can edit and delete messages from the chat list", async ({ page }) =
 
   await page.goto("/");
 
-  const chat = page.locator("section").filter({ has: page.getByRole("heading", { name: "チャット" }) });
+  const chat = page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "チャット" }) });
   await expect(chat.getByRole("button", { name: "編集" })).toHaveCount(2);
   await expect(chat.getByRole("button", { name: "削除" })).toHaveCount(2);
 

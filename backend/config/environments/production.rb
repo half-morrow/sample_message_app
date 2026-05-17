@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   config.enable_reloading = false
   config.eager_load = true
@@ -5,7 +7,7 @@ Rails.application.configure do
   config.action_controller.perform_caching = true
   config.cache_store = :memory_store
   config.force_ssl = true
-  config.log_level = ENV.fetch("RAILS_LOG_LEVEL", "info")
+  config.log_level = ENV.fetch('RAILS_LOG_LEVEL', 'info')
   config.log_tags = [:request_id]
 
   logger = ActiveSupport::Logger.new($stdout)

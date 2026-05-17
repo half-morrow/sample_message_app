@@ -131,7 +131,8 @@ export function useAdminUsers(api, enabled = true) {
     updateTabState("users", { error: "" });
     try {
       await deleteAdminUser(api, item.id);
-      const nextPage = current.items.length === 1 && current.page > 1 ? current.page - 1 : current.page;
+      const nextPage =
+        current.items.length === 1 && current.page > 1 ? current.page - 1 : current.page;
       await load(nextPage, current.query);
     } catch (err) {
       updateTabState("users", { error: err.message });
@@ -140,8 +141,33 @@ export function useAdminUsers(api, enabled = true) {
 
   useEffect(() => {
     if (!enabled) return;
-    load();
-  }, [enabled]);
+
+    let isCurrent = true;
+    const initialPage = ADMIN_INITIAL_STATE.users.page;
+    const initialQuery = ADMIN_INITIAL_STATE.users.query;
+
+    fetchAdminUsers(api, initialPage, initialQuery)
+      .then((payload) => {
+        if (!isCurrent) return;
+
+        const normalized = normalizeAdminIndex(payload, initialPage);
+        updateTabState("users", {
+          items: normalized.items,
+          meta: normalized.meta,
+          page: normalized.meta.page,
+          error: "",
+        });
+      })
+      .catch((err) => {
+        if (!isCurrent) return;
+
+        updateTabState("users", { items: [], error: err.message });
+      });
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [api, enabled]);
 
   return {
     current,
