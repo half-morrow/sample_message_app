@@ -5,7 +5,11 @@
     "preview": "vite preview --host 0.0.0.0",
     "test:e2e": "playwright test --grep-invert \"@screenshots|@visual\"",
     "test:e2e:visual": "playwright test e2e/visual-regression.spec.js",
-    "screenshots:readme": "playwright test e2e/screenshots.spec.js"
+    "screenshots:readme": "playwright test e2e/screenshots.spec.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",
@@ -14,6 +18,14 @@
     "vite": "^7.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.59.1"
+    "@eslint-react/eslint-plugin": "^5.7.10",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.59.1",
+    "eslint": "^10.4.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.3"
   }
 }

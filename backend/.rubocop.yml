@@ -1,0 +1,18 @@
+plugins:
+  - rubocop-rails
+  - rubocop-minitest
+  - rubocop-performance
+
+AllCops:
+  NewCops: enable
+  TargetRubyVersion: 3.3
+  Exclude:
+    - "bin/**/*"
+    - "db/schema.rb"
+    - "log/**/*"
+    - "tmp/**/*"
+    - "vendor/**/*"
+    - "storage/**/*"
+
+Rails:
+  Enabled: true
