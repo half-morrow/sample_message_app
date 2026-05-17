@@ -56,10 +56,10 @@ jobs:
         run: bundle exec rubocop
 
       - name: Prepare database
-        run: bin/rails db:prepare
+        run: bundle exec rails db:prepare
 
       - name: Run tests
-        run: bin/rails test
+        run: bundle exec rails test
 
   frontend:
     runs-on: ubuntu-latest
