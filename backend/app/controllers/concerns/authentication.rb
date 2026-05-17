@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Provides token-based user and admin authentication helpers.
 module Authentication
   extend ActiveSupport::Concern
 
@@ -11,7 +14,7 @@ module Authentication
     @current_user = user_from_token
     return if @current_user
 
-    render json: { error: "unauthorized" }, status: :unauthorized
+    render json: { error: 'unauthorized' }, status: :unauthorized
   end
 
   def authenticate_admin!
@@ -19,7 +22,7 @@ module Authentication
     return if performed?
     return if current_user.admin?
 
-    render json: { error: "forbidden" }, status: :forbidden
+    render json: { error: 'forbidden' }, status: :forbidden
   end
 
   def issue_token(user)
@@ -27,9 +30,9 @@ module Authentication
   end
 
   def user_from_token
-    token = request.authorization.to_s.delete_prefix("Bearer ").presence
+    token = request.authorization.to_s.delete_prefix('Bearer ').presence
     payload = verifier.verified(token)
-    User.find_by(id: payload[:user_id] || payload["user_id"]) if payload
+    User.find_by(id: payload[:user_id] || payload['user_id']) if payload
   end
 
   def verifier

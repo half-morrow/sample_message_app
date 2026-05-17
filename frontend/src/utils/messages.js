@@ -4,7 +4,12 @@ export function normalizeMessagesIndex(payload, requestedPage) {
   if (Array.isArray(payload)) {
     return {
       items: payload,
-      meta: { ...CHAT_EMPTY_META, page: requestedPage, total_count: payload.length, total_pages: payload.length > 0 ? 1 : 0 },
+      meta: {
+        ...CHAT_EMPTY_META,
+        page: requestedPage,
+        total_count: payload.length,
+        total_pages: payload.length > 0 ? 1 : 0,
+      },
     };
   }
 

@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
   namespace :api do
-    post "auth/register", to: "auth#register"
-    post "auth/login", to: "auth#login"
-    delete "auth/logout", to: "auth#logout"
+    post 'auth/register', to: 'auth#register'
+    post 'auth/login', to: 'auth#login'
+    delete 'auth/logout', to: 'auth#logout'
 
     resources :messages, only: %i[index create update destroy]
 

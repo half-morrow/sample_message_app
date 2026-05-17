@@ -31,7 +31,9 @@ function AuthenticatedApp({ auth }) {
       <header className="topbar">
         <div>
           <h1>サンプル伝言アプリ</h1>
-          <p>{auth.user.name} / {auth.user.email}</p>
+          <p>
+            {auth.user.name} / {auth.user.email}
+          </p>
         </div>
         <button onClick={auth.clearSession}>ログアウト</button>
       </header>

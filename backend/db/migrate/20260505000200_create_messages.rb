@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Creates messages posted by users.
 class CreateMessages < ActiveRecord::Migration[7.1]
   def change
     create_table :messages do |t|

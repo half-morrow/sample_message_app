@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 Rails.application.configure do
   config.enable_reloading = true
   config.eager_load = false
@@ -6,5 +8,5 @@ Rails.application.configure do
   config.active_record.verbose_query_logs = true
   config.action_controller.perform_caching = false
   config.cache_store = :null_store
-  config.hosts << "backend"
+  config.hosts << 'backend'
 end

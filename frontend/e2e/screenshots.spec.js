@@ -65,10 +65,13 @@ test.beforeAll(async () => {
 });
 
 async function setSession(page, user, token) {
-  await page.addInitScript(({ storedUser, storedToken }) => {
-    localStorage.setItem("token", storedToken);
-    localStorage.setItem("user", JSON.stringify(storedUser));
-  }, { storedUser: user, storedToken: token });
+  await page.addInitScript(
+    ({ storedUser, storedToken }) => {
+      localStorage.setItem("token", storedToken);
+      localStorage.setItem("user", JSON.stringify(storedUser));
+    },
+    { storedUser: user, storedToken: token }
+  );
 }
 
 async function routeMessages(page) {
@@ -137,9 +140,13 @@ test("README用管理画面 @screenshots", async ({ page }) => {
   await routeAdminUsers(page);
 
   await page.goto("/");
-  const adminPanel = page.locator("section").filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
+  const adminPanel = page
+    .locator("section")
+    .filter({ has: page.getByRole("heading", { name: "ユーザー管理" }) });
   await expect(adminPanel.getByText("佐藤 花子 / hanako.sato@example.test / member")).toBeVisible();
-  await expect(adminPanel.getByText("小林 里奈 / rina.kobayashi@example.test / member")).toBeVisible();
+  await expect(
+    adminPanel.getByText("小林 里奈 / rina.kobayashi@example.test / member")
+  ).toBeVisible();
   await adminPanel.scrollIntoViewIfNeeded();
 
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, "admin.png") });
